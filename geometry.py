@@ -1,4 +1,22 @@
 import numpy as np
+def chemiotaxi(a):
+        '''
+        this function has to be defined with biological data
+        '''
+        if a==1:
+            return 6
+        elif a<9:
+            return 5
+        elif a<25:
+            return 4
+        elif a<49:
+            return 3
+        elif a<81:
+            return 2
+        elif a<100:
+            return 2
+
+vchemio=np.vectorize(chemiotaxi)
 def difference2D(a,b):
     c=a[0]-b[0],a[1]-b[1]
     return c
@@ -6,6 +24,10 @@ def difference2D(a,b):
 def sum2D(a,b):
     c=a[0]+b[0],a[1]+b[1]
     return c
+
+def computeDistance(xx,yy):
+    d=xx**2+yy**2
+    return vchemio(d)
 
 def neighbors(arr,x,y,n):
     '''
@@ -35,3 +57,6 @@ def updatePBC(A,B,x,y,n):
     A[0:2*n+1,0:2*n+1]=B
     A=np.roll(np.roll(A,+x-n,axis=0),+y-n,axis=1)
     return A
+
+
+

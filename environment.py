@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import logging
 logger = logging.getLogger(__name__)
-from geometry import neighbors, updatePBC
+from geometry import neighbors, updatePBC,computeDistance
 class environment ():
     '''
     environment class,
@@ -45,13 +45,16 @@ class environment ():
         logger.debug("computing field")
         x,y = head
         ## interaction range
-        n=5
-        xarea= np.arange(x-n+1,x+n,1)
-        yarea= np.arange(y-n+1,y+n,1)
+        n=7
+        xarea= np.arange(-n+1,n,1)
+        yarea= np.arange(-n+1,n,1)
         #logger.debug("selected area\n {},\n {}".format(xarea,yarea))
         xx,yy=np.meshgrid(xarea,yarea)
-        distance=int(7/((xx-x)**2+(yy-y)**2))
-        logger.debug("computed distance is {}".format(distance))
+        distance=computeDistance(xx,yy)
+        logger.debug('computed distance matrix:\n\
+                     matrix shape is {} \n \
+                     matrix itself itself is {}\
+                     '.format(distance.shape,distance))
         update=np.maximum(neighbors(self.grid,x,y,n-1),distance)
         self.grid=updatePBC(self.grid,update,x,y,n-1)
 
@@ -66,8 +69,10 @@ class environment ():
             self.grid[head[0],head[1]]=7
         logger.debug("environment updating")
         for neurite in self.neurites:
+            assert neurite.head
             headToGrid(self, neurite.head)
-            self.computeField(neurite.head)
+            if (neurite.element=='dendrite'):
+                self.computeField(neurite.head)
 
 #    def searchNeurite(self,point):
 #        '''
@@ -76,7 +81,6 @@ class environment ():
 #        '''
 #        for x,y in neurite.points:
 #            self.grid[x%self.size,y%self.size]=7
-
 
 
     def plotGrid(self):
