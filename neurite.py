@@ -21,7 +21,7 @@ class neurite():
         self.gridSize=gridSize
         self.avoidPoints=[]
         self.env=env
-
+        self.env.addNeurite(self)
     def setHeadPosition(self,x,y):
         self.head=(x,y)
 
@@ -47,7 +47,7 @@ class neurite():
         (x,y)=sum2D(self.chooseDirection(),self.head)
         #pbc implemented
         (x,y)=(x%self.gridSize,y%self.gridSize)
-        if (self.env.grid[x,y]==7):
+        if (self.env.freeCell((x,y))):
             logging.critical("synapse to be implemented!")
         if ((x,y) in self.points):
             logging.critical("backwarding move")

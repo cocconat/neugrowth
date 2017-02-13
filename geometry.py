@@ -1,5 +1,5 @@
 import numpy as np
-def chemiotaxi(a):
+def chemiotaxi1(a):
         '''
         this function has to be defined with biological data
         '''
@@ -16,6 +16,8 @@ def chemiotaxi(a):
         elif a<100:
             return 2
 
+def chemiotaxi(a):
+    return a
 vchemio=np.vectorize(chemiotaxi)
 def difference2D(a,b):
     c=a[0]-b[0],a[1]-b[1]
@@ -26,7 +28,7 @@ def sum2D(a,b):
     return c
 
 def computeDistance(xx,yy):
-    d=xx**2+yy**2
+    d=np.sqrt(xx**2+yy**2)
     return vchemio(d)
 
 def neighbors(arr,x,y,n):

@@ -6,6 +6,8 @@ import numpy as np
 import logging
 logger = logging.getLogger(__name__)
 from geometry import neighbors, updatePBC,computeDistance
+neuriteValue=-127
+
 class environment ():
     '''
     environment class,
@@ -15,21 +17,23 @@ class environment ():
     '''
     def __init__(self,N):
         logger.debug("A new environment is created")
-        self.grid= np.zeros((N,N),dtype=np.int8)
+        self.grid= np.ndarray((N,N),dtype=np.int8)
+        self.setZero()
         self.size=N
         self.neurites=[]
     def setZero(self):
         '''
         set the whole grid to zero
         '''
-        self.grid[:,:]=0
+        self.grid.fill(127)
+        logger.debug("the env grid: {}".format(self.grid))
     #def update()
     def freeCell(self,point):
         '''
         verify cell is free from neurites
         point = (x,y) tuple and returns bool
         '''
-        if self.grid[point[0],point[1]] != 7:
+        if self.grid[point[0],point[1]] != neuriteValue:
             return True
         else:
             return False
@@ -44,18 +48,17 @@ class environment ():
         logger.debug("computing field")
         x,y = head
         ## interaction range
-        n=7
+        n=20
         xarea= np.arange(-n+1,n,1,dtype=np.int8)
         yarea= np.arange(-n+1,n,1,dtype=np.int8)
-        #logger.debug("selected area\n {},\n {}".format(xarea,yarea))
-        xx,yy=np.meshgrid(xarea,yarea,copy=False)
-        assert xx.dtype==np.int8
-        distance=computeDistance(xx,yy)
+        xx,yy=np.meshgrid(xarea,yarea)
+        distance=np.array(computeDistance(xx,yy),dtype=np.int8)
+        assert distance.dtype==np.int8
         logger.debug('computed distance matrix:\n\
                      matrix shape is {} \n \
                      matrix itself itself is {}\
                      '.format(distance.shape,distance))
-        update=np.maximum(neighbors(self.grid,x,y,n-1),distance)
+        update=np.minimum(neighbors(self.grid,x,y,n-1),distance)
         self.grid=updatePBC(self.grid,update,x,y,n-1)
 
     def update(self):
@@ -66,7 +69,7 @@ class environment ():
         the environment to allow the neurites to interact.
         '''
         def headToGrid(self,head):
-            self.grid[head[0],head[1]]=7
+            self.grid[head[0],head[1]]=neuriteValue
         logger.debug("environment updating")
         for neurite in self.neurites:
             assert neurite.head

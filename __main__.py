@@ -1,7 +1,3 @@
-'''
-environment class, create a grid of int values
-'''
-
 from environment import environment
 from neurite import neurite
 import graphic
@@ -16,7 +12,11 @@ def parse():
     parser.add_argument('--log',type=str, default='info')
     return parser
 
+#parsing settings#############################
 args=parse().parse_args()
+headStart=tuple(args.headStart)
+gridSize=args.size
+step=args.step
 #logging setting
 ##############################################
 LEVELS = { 'debug':logging.DEBUG,
@@ -33,21 +33,17 @@ fh.setFormatter(formatter)
 logger.addHandler(fh)
 ##############################################
 
-headStart=tuple(args.headStart)
-gridSize=args.size
-step=args.step
-
 logger.info("simulation is starting")
+# configurate the elements in the grid
 env=environment(gridSize)
 axon=neurite('axon',gridSize,env,headStart)
 dendrite=neurite('dendrite',gridSize,env,(50,50))
-env.addNeurite(axon)
-env.addNeurite(dendrite)
+env.update()
 for elems in env.neurites:
     logger.debug("neurit {} has head in {}".format(elems.element,headStart))
+#############################################
 
-env.update()
-
+##evolution is running!
 for i in range(step):
     for elems in env.neurites:
         elems.move()
