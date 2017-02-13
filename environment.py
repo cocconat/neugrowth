@@ -3,7 +3,6 @@ enviroment class, create a grid of int values
 '''
 
 import numpy as np
-import matplotlib.pyplot as plt
 import logging
 logger = logging.getLogger(__name__)
 from geometry import neighbors, updatePBC,computeDistance
@@ -46,10 +45,11 @@ class environment ():
         x,y = head
         ## interaction range
         n=7
-        xarea= np.arange(-n+1,n,1)
-        yarea= np.arange(-n+1,n,1)
+        xarea= np.arange(-n+1,n,1,dtype=np.int8)
+        yarea= np.arange(-n+1,n,1,dtype=np.int8)
         #logger.debug("selected area\n {},\n {}".format(xarea,yarea))
-        xx,yy=np.meshgrid(xarea,yarea)
+        xx,yy=np.meshgrid(xarea,yarea,copy=False)
+        assert xx.dtype==np.int8
         distance=computeDistance(xx,yy)
         logger.debug('computed distance matrix:\n\
                      matrix shape is {} \n \
@@ -83,10 +83,4 @@ class environment ():
 #            self.grid[x%self.size,y%self.size]=7
 
 
-    def plotGrid(self):
-        '''
-        plot an heatmap of the grid
-        '''
-        fig, ax = plt.subplots()
-        ax.pcolor(self.grid)
-        plt.show()
+

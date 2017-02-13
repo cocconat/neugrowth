@@ -4,8 +4,8 @@ environment class, create a grid of int values
 
 from environment import environment
 from neurite import neurite
-import argparse
-import logging
+import graphic
+import argparse,logging
 logger = logging.getLogger(__name__)
 
 def parse():
@@ -31,7 +31,6 @@ fh = logging.FileHandler("new_snake.log")
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 fh.setFormatter(formatter)
 logger.addHandler(fh)
-
 ##############################################
 
 headStart=tuple(args.headStart)
@@ -41,15 +40,21 @@ step=args.step
 logger.info("simulation is starting")
 env=environment(gridSize)
 axon=neurite('axon',gridSize,env,headStart)
-logger.debug("neurit {} has head in {}".format(axon.element,headStart))
+dendrite=neurite('dendrite',gridSize,env,(50,50))
 env.addNeurite(axon)
+env.addNeurite(dendrite)
+for elems in env.neurites:
+    logger.debug("neurit {} has head in {}".format(elems.element,headStart))
 
-assert axon in env.neurites
 env.update()
+
 for i in range(step):
-    axon.move()
+    for elems in env.neurites:
+        elems.move()
     env.update()
+#    if i%20==0:
+#        graphic.plotGrid(env,False)
 
 logger.debug("neurite {} points in {}".format(axon.element,axon.points))
 logger.debug("the axon did {} steps".format(len(axon.points)))
-env.plotGrid()
+graphic.plotGrid(env)

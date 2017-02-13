@@ -1,8 +1,7 @@
-import random
-from geometry import *
+from geometry import difference2D,sum2D
 import logging
+import dynamics
 logger = logging.getLogger(__name__)
-logger.setLevel(10)
 class neurite():
     '''
     neurite element
@@ -34,15 +33,13 @@ class neurite():
              x=random.choice([self.head[0]+i for i in [-1,0,1]])
             y=random.choice([self.head[1]+i for i in [-1,0,1]])
         '''
-        if random.random()<0.5:
-            '''
-            move following inertia
-            '''
-            step=difference2D(self.head,self.points[-1])
-        if __debug__:
-            step=(1,1)
-        logger.debug("next step has direction {}".format(step))
-        return step
+        dx,dy=difference2D(self.head,self.points[-1])
+        if self.element=='dendrite':
+            dx,dy=dynamics.quasiRandomDynamic(dx,dy)
+        if self.element=='axon':
+            dx,dy=dynamics.fieldAttractive(self.head,self.env)
+        logger.debug("next step has direction {}".format(dx,dy))
+        return dx,dy
     def move(self):
         '''
         self avoiding moving is implemented, the standing move is allowed
